@@ -8,6 +8,8 @@ import ForgotPasswordPage from './pages/ForgotPasswordPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import UpdatePasswordPage from './pages/UpdatePasswordPage'
 import Dashboard from './pages/Dashboard'
+import { AuthProvider } from './context/AuthContext'
+import Index from './pages/Index'
 
 function App() {
 
@@ -15,6 +17,7 @@ function App() {
   return (
     <>
       <BrowserRouter>
+      <AuthProvider>
       <Routes>
         {/* Public Routes */}
           <Route path="/login" element={<LoginPage/>} />
@@ -45,9 +48,10 @@ function App() {
           />
 
           {/* Default Redirect */}
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          <Route path="/" element={<Index/>} />
         
       </Routes>
+      </AuthProvider>
       </BrowserRouter>
     </>
   )
