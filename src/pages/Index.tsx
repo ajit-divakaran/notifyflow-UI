@@ -53,12 +53,20 @@ const Index = () => {
               Built for developers who need reliability at scale.
             </p>
             <div className="flex justify-center gap-4">
-              <Link to="/register">
+              {!user ? <Link to="/register">
                 <Button size="lg">
                   Start building free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </Link>
+              :
+              <Link to="/dashboard">
+                <Button size="lg">
+                  Go to Dashboard
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              }
               <Button size="lg" variant="outline">
                 View documentation
               </Button>
@@ -103,7 +111,7 @@ const Index = () => {
 
       <footer className="border-t border-border py-8">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
-          © 2024 NotifyFlow. All rights reserved.
+          © 2025 NotifyFlow. All rights reserved.
         </div>
       </footer>
     </div>

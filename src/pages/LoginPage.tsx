@@ -34,12 +34,9 @@ const Login = () => {
     if (error) {
      toast.error(error.message || "Failed to sign in with Google")
       setIsLoading(false)
-    } else {
-      // AuthContext detects login automatically -> Redirects via App.tsx logic usually
-      // But we can force it here for good UX
-      toast.success("Welcome back!")
-      navigate('/dashboard')
-  }}
+    } 
+
+}
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

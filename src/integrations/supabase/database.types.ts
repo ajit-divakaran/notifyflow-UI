@@ -16,21 +16,27 @@ export type Database = {
     Tables: {
       api_keys: {
         Row: {
+          display_key: string | null
           id: string
+          is_active: boolean
           key_hash: string | null
           label: string | null
           last_used: string | null
           user_id: string | null
         }
         Insert: {
+          display_key?: string | null
           id?: string
+          is_active?: boolean
           key_hash?: string | null
           label?: string | null
           last_used?: string | null
           user_id?: string | null
         }
         Update: {
+          display_key?: string | null
           id?: string
+          is_active?: boolean
           key_hash?: string | null
           label?: string | null
           last_used?: string | null
@@ -86,6 +92,7 @@ export type Database = {
           id: string
           provider_response: Json | null
           recipient: string | null
+          request_latency_ms: number
           status: string | null
           user_id: string | null
         }
@@ -96,6 +103,7 @@ export type Database = {
           id?: string
           provider_response?: Json | null
           recipient?: string | null
+          request_latency_ms?: number
           status?: string | null
           user_id?: string | null
         }
@@ -106,6 +114,7 @@ export type Database = {
           id?: string
           provider_response?: Json | null
           recipient?: string | null
+          request_latency_ms?: number
           status?: string | null
           user_id?: string | null
         }
