@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react"; // Removed useEffect
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -16,65 +16,46 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { RefreshCw, Mail, MessageSquare, Bell } from "lucide-react";
-import { mockLogs, type Log } from "@/data/mockLogs";
-import { formatDistanceToNow, parseISO } from "date-fns";
-import axios from "axios";
+import { RefreshCw, Mail, MessageSquare } from "lucide-react";
+import { formatDistanceToNow } from "date-fns";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/supabaseClient";
 import type { Database } from "@/integrations/supabase/database.types";
 import { useNotificationLogs } from "@/hooks/useNotificationLogs";
 
 type LogType = Database["public"]['Tables']['notification_logs']['Row']
 
 const Logs = () => {
-  const [logs, setLogs] = useState<LogType>();
-  const [selectedLog, setSelectedLog] = useState<LogType | null>(null);
-  const [isRefreshing, setIsRefreshing] = useState(false);
   const { user } = useAuth();
-   const { data: userlogs, isLoading, error } = useNotificationLogs(user?.id);
-
   
-    const getLogs = async () => {
-      
+  // 1. DIRECT INTEGRATION: Rename 'data' to 'logs' so existing code works.
+  // We also grab 'refetch' and 'isRefetching' to handle the button logic.
+  const { 
+    data: logs, 
+    refetch, 
+    isRefetching 
+  } = useNotificationLogs(user?.id);
 
-      // const result = await supabase
-      // .from('notification_logs')
-      // .select('*')
-      // .eq('user_id',user?.id);
+  // 2. UI STATE ONLY: We keep this because it tracks which row is clicked
+  const [selectedLog, setSelectedLog] = useState<LogType | null>(null);
 
-      setLogs(userlogs);
-    };
-
-  useEffect(() => {
-  
-    getLogs();
-   
-  }, []);
-
+  // 3. CLEAN REFRESH: Just call the hook's refetch function
   const handleRefresh = () => {
-    setLogs([])
-    setIsRefreshing(true);
-    getLogs()
-    if(logs){
-      setIsRefreshing(false)
-    }
+    refetch();
   };
 
-  const getChannelIcon = (channel: Log["channel"]) => {
+  const getChannelIcon = (channel: string | null) => { // Updated type to be safe
     switch (channel) {
       case "EMAIL":
         return <Mail className="h-4 w-4" />;
       case "SMS":
         return <MessageSquare className="h-4 w-4" />;
-      // case "PUSH":
-      //   return <Bell className="h-4 w-4" />;
+      default:
+        return <MessageSquare className="h-4 w-4" />;
     }
   };
 
   return (
     <div className="space-y-4">
-      {console.log(logs)}
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Logs</h2>
@@ -82,9 +63,11 @@ const Logs = () => {
             Real-time notification delivery logs
           </p>
         </div>
-        <Button onClick={handleRefresh} disabled={isRefreshing}>
+        
+        {/* 4. LOADING STATE: Use isRefetching for the spinner animation */}
+        <Button onClick={handleRefresh} disabled={isRefetching}>
           <RefreshCw
-            className={`mr-2 h-4 w-4 ${isRefreshing ? "animate-spin" : ""}`}
+            className={`mr-2 h-4 w-4 ${isRefetching ? "animate-spin" : ""}`}
           />
           Refresh
         </Button>
@@ -103,7 +86,8 @@ const Logs = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {logs?.map((log:LogType) => (
+            {/* 5. DIRECT RENDER: Maps directly over the data from the hook */}
+            {logs?.map((log: LogType) => (
               <TableRow
                 key={log.id}
                 className="cursor-pointer hover:bg-muted/50"
@@ -137,7 +121,7 @@ const Logs = () => {
                   {log.request_latency_ms}ms
                 </TableCell>
                 <TableCell className="text-right text-sm text-muted-foreground">
-                  {formatDistanceToNow(new Date(log.created_at+"Z"), { addSuffix: true })}
+                  {formatDistanceToNow(new Date(log.created_at + "Z"), { addSuffix: true })}
                 </TableCell>
               </TableRow>
             ))}
@@ -166,7 +150,7 @@ const Logs = () => {
                   </Badge>
                 </SheetTitle>
                 <SheetDescription>
-                  {formatDistanceToNow(new Date(selectedLog.created_at+"Z"), {
+                  {formatDistanceToNow(new Date(selectedLog.created_at + "Z"), {
                     addSuffix: true,
                   })}
                 </SheetDescription>
@@ -177,7 +161,6 @@ const Logs = () => {
                   <h3 className="mb-2 text-sm font-semibold">Request</h3>
                   <div className="rounded-lg bg-slate-950 p-4">
                     <pre className="overflow-x-auto text-xs text-slate-50">
-                      {/* {JSON.stringify(selectedLog.request, null, 2)} */}
                       {'request data not available'}
                     </pre>
                   </div>
